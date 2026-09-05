@@ -25,7 +25,6 @@ export default function AttendancePage() {
 
   // Permission checks
   const canCorrectAttendance = hasPermission('attendance.correct');
-  const canViewAllAttendance = hasPermission('attendance.read');
   const isEmployee = user?.role?.code === 'EMPLOYEE';
 
   const loadData = async () => {
@@ -35,8 +34,9 @@ export default function AttendancePage() {
       const res = await attendanceService.getAttendanceRecords();
       if (res.success && res.data) {
         // Employees see only their own data
-        if (isEmployee && user?.employee) {
-          setRecords(res.data.filter((r) => r.employeeId === user.employee!.id));
+        const myEmpId = user?.employee?.id;
+        if (isEmployee && myEmpId) {
+          setRecords(res.data.filter((r) => !r.employeeId || r.employeeId === myEmpId));
         } else {
           setRecords(res.data);
         }
@@ -58,8 +58,9 @@ export default function AttendancePage() {
         if (!isMounted) return;
         if (res.success && res.data) {
           // Employees see only their own data
-          if (isEmployee && user?.employee) {
-            setRecords(res.data.filter((r) => r.employeeId === user.employee!.id));
+          const myEmpId = user?.employee?.id;
+          if (isEmployee && myEmpId) {
+            setRecords(res.data.filter((r) => !r.employeeId || r.employeeId === myEmpId));
           } else {
             setRecords(res.data);
           }

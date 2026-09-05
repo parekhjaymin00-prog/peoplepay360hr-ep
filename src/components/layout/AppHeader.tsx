@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_DEFINITIONS } from '@/lib/permissions';
@@ -14,19 +14,51 @@ export const AppHeader: React.FC = () => {
   const [clockTime, setClockTime] = useState<string | null>(null);
   const [clockLoading, setClockLoading] = useState(false);
 
+  useEffect(() => {
+    let isMounted = true;
+    if (user?.employee) {
+      attendanceService
+        .getAttendanceRecords()
+        .then((res) => {
+          if (!isMounted) return;
+          if (res.success && res.data && res.data.length > 0) {
+            const todayUtc = new Date().toISOString().split('T')[0];
+            const todayRec = res.data.find((r) => r.date === todayUtc);
+            if (todayRec) {
+              if (todayRec.checkIn && !todayRec.checkOut) {
+                setClockedIn(true);
+                setClockTime(todayRec.checkIn);
+              } else if (todayRec.checkOut) {
+                setClockedIn(false);
+                setClockTime(null);
+              }
+            }
+          }
+        })
+        .catch(() => {});
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
+
   const handleToggleClock = async () => {
     if (clockLoading) return;
     setClockLoading(true);
     try {
       if (!clockedIn) {
-        await attendanceService.checkIn();
-        setClockedIn(true);
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        setClockTime(timeStr);
+        const res = await attendanceService.checkIn();
+        if (res.success) {
+          setClockedIn(true);
+          const timeStr = res.data?.checkIn || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          setClockTime(timeStr);
+        }
       } else {
-        await attendanceService.checkOut();
-        setClockedIn(false);
-        setClockTime(null);
+        const res = await attendanceService.checkOut();
+        if (res.success) {
+          setClockedIn(false);
+          setClockTime(null);
+        }
       }
     } catch {
       // Backend error will be handled gracefully

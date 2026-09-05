@@ -38,8 +38,9 @@ export const EmployeeDashboard: React.FC = () => {
     Promise.all([
       empId ? employeeService.getEmployeeById(empId) : employeeService.getEmployees(),
       payrollService.getPayslips(),
+      attendanceService.getAttendanceRecords(),
     ])
-      .then(([empRes, slipsRes]) => {
+      .then(([empRes, slipsRes, attRes]) => {
         if (!isMounted) return;
         if (empRes.success && empRes.data) {
           if (Array.isArray(empRes.data)) {
@@ -51,6 +52,19 @@ export const EmployeeDashboard: React.FC = () => {
         if (slipsRes.success && slipsRes.data && slipsRes.data.length > 0) {
           const userSlip = empId ? slipsRes.data.find((s) => s.employeeId === empId) : slipsRes.data[0];
           setMyRecentPayslip(userSlip || slipsRes.data[0]);
+        }
+        if (attRes.success && attRes.data && attRes.data.length > 0) {
+          const todayUtc = new Date().toISOString().split('T')[0];
+          const todayRec = attRes.data.find((r) => r.date === todayUtc);
+          if (todayRec) {
+            if (todayRec.checkIn && !todayRec.checkOut) {
+              setClockedIn(true);
+              setClockInTime(todayRec.checkIn);
+            } else if (todayRec.checkOut) {
+              setClockedIn(false);
+              setClockInTime(todayRec.checkIn);
+            }
+          }
         }
         setLoading(false);
       })
@@ -68,13 +82,17 @@ export const EmployeeDashboard: React.FC = () => {
     setClockLoading(true);
     try {
       if (!clockedIn) {
-        await attendanceService.checkIn();
-        setClockedIn(true);
-        setClockInTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        const res = await attendanceService.checkIn();
+        if (res.success) {
+          setClockedIn(true);
+          setClockInTime(res.data?.checkIn || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        }
       } else {
-        await attendanceService.checkOut();
-        setClockedIn(false);
-        setClockInTime(null);
+        const res = await attendanceService.checkOut();
+        if (res.success) {
+          setClockedIn(false);
+          setClockInTime(null);
+        }
       }
     } catch {
       // Handled gracefully
