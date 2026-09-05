@@ -23,7 +23,8 @@ import {
 
 export const EmployeeDashboard: React.FC = () => {
   const { user } = useAuth();
-  const [clockedIn, setClockedIn] = useState(false);
+  type ShiftStatus = 'not_started' | 'active' | 'completed';
+  const [shiftStatus, setShiftStatus] = useState<ShiftStatus>('not_started');
   const [clockInTime, setClockInTime] = useState<string | null>(null);
   const [clockLoading, setClockLoading] = useState(false);
 
@@ -36,7 +37,7 @@ export const EmployeeDashboard: React.FC = () => {
     const empId = user?.employee?.id;
 
     Promise.all([
-      empId ? employeeService.getEmployeeById(empId) : employeeService.getEmployees(),
+      empId ? employeeService.getEmployeeById(empId) : Promise.resolve({ success: true, data: null }),
       payrollService.getPayslips(),
       attendanceService.getAttendanceRecords(),
     ])
@@ -58,12 +59,15 @@ export const EmployeeDashboard: React.FC = () => {
           const todayRec = attRes.data.find((r) => r.date === todayUtc);
           if (todayRec) {
             if (todayRec.checkIn && !todayRec.checkOut) {
-              setClockedIn(true);
+              setShiftStatus('active');
               setClockInTime(todayRec.checkIn);
             } else if (todayRec.checkOut) {
-              setClockedIn(false);
+              setShiftStatus('completed');
               setClockInTime(todayRec.checkIn);
             }
+          } else {
+            setShiftStatus('not_started');
+            setClockInTime(null);
           }
         }
         setLoading(false);
@@ -78,20 +82,20 @@ export const EmployeeDashboard: React.FC = () => {
   }, [user]);
 
   const handleClockToggle = async () => {
-    if (clockLoading) return;
+    if (clockLoading || shiftStatus === 'completed') return;
     setClockLoading(true);
     try {
-      if (!clockedIn) {
+      if (shiftStatus === 'not_started') {
         const res = await attendanceService.checkIn();
-        if (res.success) {
-          setClockedIn(true);
-          setClockInTime(res.data?.checkIn || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        if (res.success && res.data) {
+          setShiftStatus('active');
+          setClockInTime(res.data.checkIn);
         }
-      } else {
+      } else if (shiftStatus === 'active') {
         const res = await attendanceService.checkOut();
-        if (res.success) {
-          setClockedIn(false);
-          setClockInTime(null);
+        if (res.success && res.data) {
+          setShiftStatus('completed');
+          setClockInTime(res.data.checkIn);
         }
       }
     } catch {
@@ -136,17 +140,27 @@ export const EmployeeDashboard: React.FC = () => {
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '0.75rem', opacity: 0.85 }}>Today&apos;s Presence</div>
               <div style={{ fontSize: '0.9375rem', fontWeight: 600 }}>
-                {clockedIn ? `Clocked in at ${clockInTime}` : 'Not clocked in yet'}
+                {shiftStatus === 'completed'
+                  ? 'Shift Completed for Today'
+                  : shiftStatus === 'active'
+                  ? `Clocked in at ${clockInTime}`
+                  : 'Not clocked in yet'}
               </div>
             </div>
             <Button
-              variant={clockedIn ? 'danger' : 'success'}
+              variant={shiftStatus === 'active' ? 'danger' : shiftStatus === 'completed' ? 'secondary' : 'success'}
               size="md"
               leftIcon={<Clock size={16} />}
               onClick={handleClockToggle}
-              disabled={clockLoading}
+              disabled={clockLoading || shiftStatus === 'completed'}
             >
-              {clockLoading ? 'Updating...' : clockedIn ? 'Clock Out' : 'Clock In Now'}
+              {clockLoading
+                ? 'Updating...'
+                : shiftStatus === 'completed'
+                ? 'Shift Completed'
+                : shiftStatus === 'active'
+                ? 'Clock Out'
+                : 'Clock In Now'}
             </Button>
           </div>
         </div>
