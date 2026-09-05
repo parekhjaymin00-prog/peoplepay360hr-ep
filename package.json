@@ -14,7 +14,8 @@
     "test:db": "tsx tests/db-integrity.test.ts",
     "test:auth": "tsx tests/auth.test.ts",
     "test:hr": "tsx tests/hr-core.test.ts",
-    "test": "tsx tests/db-integrity.test.ts && tsx tests/auth.test.ts && tsx tests/hr-core.test.ts"
+    "test:attendance": "tsx tests/attendance.test.ts",
+    "test": "tsx tests/db-integrity.test.ts && tsx tests/auth.test.ts && tsx tests/hr-core.test.ts && tsx tests/attendance.test.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

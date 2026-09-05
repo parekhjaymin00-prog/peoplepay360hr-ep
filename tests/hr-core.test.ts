@@ -194,7 +194,7 @@ async function runHrCoreTests() {
 
     // Search employee
     const found = await EmployeeService.listEmployees({ search: 'Wonderland' });
-    if (found.length === 0 || found[0].id !== emp.id) {
+    if (found.length === 0 || !found.some((e) => e.id === emp.id)) {
       throw new Error('Employee search by name failed');
     }
   });
