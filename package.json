@@ -15,7 +15,8 @@
     "test:auth": "tsx tests/auth.test.ts",
     "test:hr": "tsx tests/hr-core.test.ts",
     "test:attendance": "tsx tests/attendance.test.ts",
-    "test": "tsx tests/db-integrity.test.ts && tsx tests/auth.test.ts && tsx tests/hr-core.test.ts && tsx tests/attendance.test.ts"
+    "test:timeoff": "tsx tests/time-off.test.ts",
+    "test": "tsx tests/db-integrity.test.ts && tsx tests/auth.test.ts && tsx tests/hr-core.test.ts && tsx tests/attendance.test.ts && tsx tests/time-off.test.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -38,6 +39,8 @@
     "@types/react-dom": "^19.0.4",
     "@types/uuid": "^10.0.0",
     "dotenv": "^16.4.7",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.5.25",
     "prisma": "^6.4.1",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3"
