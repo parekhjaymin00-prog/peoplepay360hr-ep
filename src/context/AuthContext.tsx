@@ -5,7 +5,7 @@ import { AuthState, User, UserRole } from '@/types/auth.types';
 import { authService, LoginCredentials } from '@/services/auth.service';
 
 interface AuthContextType extends AuthState {
-  role: UserRole | null;
+  role: UserRole;
   permissions: string[];
   login: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
@@ -28,8 +28,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkSession = useCallback(async () => {
     try {
       const res = await authService.getCurrentUser();
-      if (res.success && res.data) {
-        setUser(res.data);
+      const userData = (res.data as unknown as { user?: User })?.user || (res.data as User);
+      if (res.success && userData) {
+        setUser(userData);
         setStatus('authenticated');
       } else {
         setUser(null);
@@ -47,8 +48,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .getCurrentUser()
       .then((res) => {
         if (!isMounted) return;
-        if (res.success && res.data) {
-          setUser(res.data);
+        const userData = (res.data as unknown as { user?: User })?.user || (res.data as User);
+        if (res.success && userData) {
+          setUser(userData);
           setStatus('authenticated');
         } else {
           setUser(null);
@@ -77,8 +79,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Call GET /api/auth/me to establish the authoritative current user
     const meRes = await authService.getCurrentUser();
-    if (meRes.success && meRes.data) {
-      setUser(meRes.data);
+    const meUserData = (meRes.data as unknown as { user?: User })?.user || (meRes.data as User);
+    if (meRes.success && meUserData) {
+      setUser(meUserData);
       setStatus('authenticated');
       return { success: true };
     } else if (loginRes.data?.user) {
@@ -111,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [user]
   );
 
-  const role: UserRole | null = user?.role.code || null;
+  const role: UserRole = user?.role?.code || 'EMPLOYEE';
   const permissions: string[] = user?.permissions || [];
 
   return (
@@ -139,4 +142,3 @@ export function useAuth() {
   }
   return context;
 }
-
