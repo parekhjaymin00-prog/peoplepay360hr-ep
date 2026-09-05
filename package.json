@@ -17,7 +17,8 @@
     "test:attendance": "tsx tests/attendance.test.ts",
     "test:timeoff": "tsx tests/time-off.test.ts",
     "test:salary": "tsx tests/salary-structure-rule.test.ts",
-    "test": "tsx tests/db-integrity.test.ts && tsx tests/auth.test.ts && tsx tests/hr-core.test.ts && tsx tests/attendance.test.ts && tsx tests/time-off.test.ts && tsx tests/salary-structure-rule.test.ts"
+    "test:payroll": "tsx tests/payroll-engine.test.ts",
+    "test": "tsx tests/db-integrity.test.ts && tsx tests/auth.test.ts && tsx tests/hr-core.test.ts && tsx tests/attendance.test.ts && tsx tests/time-off.test.ts && tsx tests/salary-structure-rule.test.ts && tsx tests/payroll-engine.test.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
