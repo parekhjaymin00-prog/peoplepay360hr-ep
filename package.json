@@ -11,7 +11,8 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
-    "test:db": "tsx tests/db-integrity.test.ts"
+    "test:db": "tsx tests/db-integrity.test.ts",
+    "test": "tsx tests/db-integrity.test.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
