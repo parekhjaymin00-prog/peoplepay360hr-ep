@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { AlertCircle, FileQuestion, Lock, RefreshCw } from 'lucide-react';
@@ -7,10 +7,19 @@ import { Button } from './Button';
 export interface StateContainerProps {
   type: 'loading' | 'empty' | 'error' | 'unauthorized';
   title?: string;
-  description?: string;
+  description?: string | React.ReactNode | unknown;
   onRetry?: () => void;
   actionText?: string;
   onAction?: () => void;
+}
+
+function formatDesc(desc: unknown): React.ReactNode {
+  if (!desc) return null;
+  if (typeof desc === 'string') return desc;
+  if (typeof desc === 'object' && desc !== null) {
+    return (desc as any).message || (desc as any).code || JSON.stringify(desc);
+  }
+  return String(desc);
 }
 
 export const StateContainer: React.FC<StateContainerProps> = ({
@@ -21,6 +30,8 @@ export const StateContainer: React.FC<StateContainerProps> = ({
   actionText,
   onAction,
 }) => {
+  const safeDescription = formatDesc(description);
+
   if (type === 'loading') {
     return (
       <div
@@ -45,7 +56,7 @@ export const StateContainer: React.FC<StateContainerProps> = ({
           }}
         />
         <p style={{ fontSize: '0.875rem', fontWeight: 500 }}>
-          {description || 'Loading records...'}
+          {safeDescription || 'Loading records...'}
         </p>
       </div>
     );
@@ -85,7 +96,7 @@ export const StateContainer: React.FC<StateContainerProps> = ({
           {title || 'No records found'}
         </h4>
         <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', maxWidth: '360px', marginBottom: '1.25rem' }}>
-          {description || 'There are currently no items matching your criteria in this view.'}
+          {safeDescription || 'There are currently no items matching your criteria in this view.'}
         </p>
         {actionText && onAction && (
           <Button variant="primary" size="sm" onClick={onAction}>
@@ -130,7 +141,7 @@ export const StateContainer: React.FC<StateContainerProps> = ({
           {title || 'Access Restricted'}
         </h4>
         <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', maxWidth: '420px', marginBottom: '1.5rem' }}>
-          {description || 'Your current user role does not have authorization to view or configure this module. Switch roles in the top bar to inspect other role views.'}
+          {safeDescription || 'Your current user role does not have authorization to view or configure this module. Switch roles in the top bar to inspect other role views.'}
         </p>
         {actionText && onAction && (
           <Button variant="secondary" size="md" onClick={onAction}>
@@ -175,7 +186,7 @@ export const StateContainer: React.FC<StateContainerProps> = ({
         {title || 'Unable to load data'}
       </h4>
       <p style={{ fontSize: '0.8125rem', color: 'var(--color-danger-text)', opacity: 0.85, maxWidth: '380px', marginBottom: '1rem' }}>
-        {description || 'An unexpected error occurred while communicating with the backend API service.'}
+        {safeDescription || 'An unexpected error occurred while communicating with the backend API service.'}
       </p>
       {onRetry && (
         <Button
@@ -191,26 +202,26 @@ export const StateContainer: React.FC<StateContainerProps> = ({
   );
 };
 
-export const LoadingState: React.FC<{ description?: string }> = ({ description }) => (
+export const LoadingState: React.FC<{ description?: string | unknown }> = ({ description }) => (
   <StateContainer type="loading" description={description} />
 );
 
 export const EmptyState: React.FC<{
   title?: string;
-  description?: string;
+  description?: string | unknown;
   actionText?: string;
   onAction?: () => void;
 }> = (props) => <StateContainer type="empty" {...props} />;
 
 export const ErrorState: React.FC<{
   title?: string;
-  description?: string;
+  description?: string | unknown;
   onRetry?: () => void;
 }> = (props) => <StateContainer type="error" {...props} />;
 
 export const UnauthorizedState: React.FC<{
   title?: string;
-  description?: string;
+  description?: string | unknown;
   actionText?: string;
   onAction?: () => void;
 }> = (props) => <StateContainer type="unauthorized" {...props} />;

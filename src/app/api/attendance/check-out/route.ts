@@ -1,7 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { proxyToBackend } from "@/lib/api/proxy-helper";
+﻿import { NextRequest } from 'next/server';
+import { proxyToBackend } from '@/lib/api/proxy-helper';
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
+  let body: unknown = undefined;
+  try {
+    body = await request.json();
+  } catch {
+    // Body is optional for check-out
+  }
   return proxyToBackend(request, '/api/attendance/check-out', 'POST', body);
 }

@@ -1,4 +1,4 @@
-import { ApiResponse } from '@/types/common.types';
+﻿import { ApiResponse } from '@/types/common.types';
 
 export class ApiError extends Error {
   status: number;
@@ -50,7 +50,15 @@ class ApiClient {
         let errorMsg = `Request failed (${res.status})`;
         try {
           const errBody = await res.json();
-          errorMsg = errBody.message || errBody.error || errorMsg;
+          if (typeof errBody.message === 'string') {
+            errorMsg = errBody.message;
+          } else if (errBody.error) {
+            if (typeof errBody.error === 'string') {
+              errorMsg = errBody.error;
+            } else if (typeof errBody.error === 'object' && errBody.error !== null) {
+              errorMsg = errBody.error.message || errBody.error.code || JSON.stringify(errBody.error);
+            }
+          }
         } catch {
           // Response body was not JSON
         }

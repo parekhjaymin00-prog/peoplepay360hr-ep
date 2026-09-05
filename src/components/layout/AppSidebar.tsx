@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -23,7 +23,7 @@ import {
 
 export const AppSidebar: React.FC = () => {
   const pathname = usePathname();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
 
   // Resolve visible navigation items dynamically via configuration resolver
   const navigationGroups = resolveNavigation(role);
@@ -103,15 +103,21 @@ export const AppSidebar: React.FC = () => {
             </div>
 
             {group.items.map((item) => {
+              // Dynamically route employee profile to real authenticated employee UUID
+              const itemHref =
+                item.id === 'emp-profile' && user?.employee?.id
+                  ? `/employees/${user.employee.id}`
+                  : item.href;
+
               const isActive =
                 item.href === '/dashboard'
                   ? pathname === '/dashboard'
-                  : pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  : pathname === itemHref || pathname.startsWith(`${itemHref}/`);
 
               return (
                 <Link
                   key={item.id}
-                  href={item.href}
+                  href={itemHref}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -131,32 +137,32 @@ export const AppSidebar: React.FC = () => {
                     {renderIcon(item.iconName)}
                   </span>
                   <span style={{ flex: 1 }}>{item.label}</span>
-
-                  {item.isReadOnly && (
-                    <span
-                      style={{
-                        fontSize: '0.625rem',
-                        padding: '0.1rem 0.35rem',
-                        borderRadius: '4px',
-                        backgroundColor: '#334155',
-                        color: '#94a3b8',
-                      }}
-                    >
-                      Read Only
-                    </span>
-                  )}
-
                   {item.badge && (
                     <span
                       style={{
                         fontSize: '0.625rem',
                         padding: '0.1rem 0.35rem',
+                        backgroundColor: '#334155',
+                        color: '#94a3b8',
                         borderRadius: '4px',
-                        backgroundColor: '#1e293b',
-                        color: '#fbbf24',
+                        fontWeight: 600,
                       }}
                     >
                       {item.badge}
+                    </span>
+                  )}
+                  {item.isReadOnly && (
+                    <span
+                      style={{
+                        fontSize: '0.625rem',
+                        padding: '0.1rem 0.35rem',
+                        backgroundColor: '#1e293b',
+                        color: '#64748b',
+                        borderRadius: '4px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Read-Only
                     </span>
                   )}
                 </Link>
@@ -166,7 +172,7 @@ export const AppSidebar: React.FC = () => {
         ))}
       </div>
 
-      {/* Footer / Build status */}
+      {/* Footer system build badge */}
       <div
         style={{
           padding: '0.75rem 1.25rem',
@@ -177,8 +183,8 @@ export const AppSidebar: React.FC = () => {
           justifyContent: 'space-between',
         }}
       >
-        <span>v0.1.0 • Odoo Hackathon</span>
-        <span style={{ color: '#94a3b8' }}>Preview Foundation</span>
+        <span>v0.1.0-alpha</span>
+        <span style={{ color: '#10b981' }}>Live Backend API</span>
       </div>
     </aside>
   );

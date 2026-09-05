@@ -1,4 +1,4 @@
-import { NavigationCategoryConfig, NavigationItemConfig } from './navigation-types';
+﻿import { NavigationCategoryConfig, NavigationItemConfig } from './navigation-types';
 
 export const NAVIGATION_CATEGORIES: NavigationCategoryConfig[] = [
   {
@@ -43,7 +43,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
   {
     id: 'emp-profile',
     label: 'My Employee Profile',
-    href: '/employees/emp-1',
+    href: '/employees/me',
     iconName: 'User',
     category: 'workspace',
     allowedRoles: ['EMPLOYEE'],
@@ -196,3 +196,4 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     badge: 'TBD Backend',
   },
 ];
+

@@ -33,9 +33,10 @@ import { getRoleCapabilities } from '@/lib/permissions';
 export default function EmployeeHubPage() {
   const params = useParams();
   const router = useRouter();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const caps = getRoleCapabilities(role);
-  const employeeId = params?.id as string;
+  const rawId = params?.id as string;
+  const employeeId = rawId === 'emp-1' || rawId === 'me' || rawId === 'profile' ? (user?.employee?.id || rawId) : rawId;
 
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -78,7 +79,7 @@ export default function EmployeeHubPage() {
 
   useEffect(() => {
     let isMounted = true;
-    if (!employeeId) return;
+    if (!employeeId || employeeId === 'me' || employeeId === 'emp-1') return;
 
     Promise.all([
       employeeService.getEmployeeById(employeeId),
@@ -111,7 +112,7 @@ export default function EmployeeHubPage() {
     return () => {
       isMounted = false;
     };
-  }, [employeeId]);
+  }, [employeeId, user?.employee?.id]);
 
   if (loading) {
     return <StateContainer type="loading" description="Loading employee operational hub..." />;
@@ -154,7 +155,7 @@ export default function EmployeeHubPage() {
     <div>
       <ActionRibbon
         title={employee.name}
-        subtitle={`${employee.employeeCode} • ${employee.jobPosition}`}
+        subtitle={`${employee.employeeCode} Ã¢â‚¬Â¢ ${employee.jobPosition}`}
         statusBadge={<Badge status={employee.status} />}
         leftActions={
           <Link href={role === 'EMPLOYEE' ? '/dashboard' : '/employees'} style={{ textDecoration: 'none' }}>
@@ -204,7 +205,7 @@ export default function EmployeeHubPage() {
                   {employee.name}
                 </h3>
                 <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                  {employee.jobPosition} • <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>{employee.department}</span>
+                  {employee.jobPosition} Ã¢â‚¬Â¢ <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>{employee.department}</span>
                 </p>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Assigned Schedule: {employee.scheduleName}
@@ -333,7 +334,7 @@ export default function EmployeeHubPage() {
                     fontSize: '0.8125rem',
                   }}
                 >
-                  ⚠️ <strong>Missing Bank Account Details:</strong> Direct payroll bank transfers will require manual check disbursement until bank details are registered.
+                  Ã¢Å¡Â Ã¯Â¸Â <strong>Missing Bank Account Details:</strong> Direct payroll bank transfers will require manual check disbursement until bank details are registered.
                 </div>
               )}
             </div>
@@ -404,7 +405,7 @@ export default function EmployeeHubPage() {
                       <tr key={log.id}>
                         <td>{formatDate(log.date)}</td>
                         <td>{log.checkIn}</td>
-                        <td>{log.checkOut || '—'}</td>
+                        <td>{log.checkOut || 'Ã¢â‚¬â€'}</td>
                         <td style={{ fontWeight: 600 }}>{formatHours(log.workedHours)}</td>
                         <td><Badge status={log.status} /></td>
                       </tr>
@@ -441,9 +442,9 @@ export default function EmployeeHubPage() {
                       <tr key={req.id}>
                         <td><code>{req.requestNumber}</code></td>
                         <td>{req.timeOffTypeName}</td>
-                        <td>{formatDate(req.startDate)} – {formatDate(req.endDate)}</td>
+                        <td>{formatDate(req.startDate)} Ã¢â‚¬â€œ {formatDate(req.endDate)}</td>
                         <td>{req.duration} {req.unit}</td>
-                        <td style={{ color: 'var(--text-secondary)' }}>{req.reason || '—'}</td>
+                        <td style={{ color: 'var(--text-secondary)' }}>{req.reason || 'Ã¢â‚¬â€'}</td>
                         <td><Badge status={req.status} /></td>
                       </tr>
                     ))}
@@ -481,7 +482,7 @@ export default function EmployeeHubPage() {
                         <td>{alc.totalDays} Days</td>
                         <td style={{ color: 'var(--color-warning-text)' }}>{alc.takenDays} Days</td>
                         <td style={{ color: 'var(--color-success-text)', fontWeight: 700 }}>{alc.remainingDays} Days</td>
-                        <td>{formatDate(alc.validityStart)} – {formatDate(alc.validityEnd)}</td>
+                        <td>{formatDate(alc.validityStart)} Ã¢â‚¬â€œ {formatDate(alc.validityEnd)}</td>
                         <td><Badge status={alc.status} /></td>
                       </tr>
                     ))}

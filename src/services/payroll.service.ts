@@ -1,16 +1,54 @@
-import { apiClient } from './api.client';
+﻿import { apiClient } from './api.client';
 import { ApiResponse } from '@/types/common.types';
-import { Payrun, Payslip, PayrollDashboardMetrics, SalaryRule, SalaryStructure } from '@/types/payroll.types';
+import { Payrun, Payslip, PayslipStatus, PayrollDashboardMetrics, SalaryRule, SalaryStructure } from '@/types/payroll.types';
+
+function normalizePayslip(p: any): Payslip {
+  if (!p) return p;
+  return {
+    ...p,
+    id: p.id,
+    payrunId: p.payrunId,
+    payrunName: p.payrunName || p.payrun?.name || p.payrun?.reference || 'General Payrun',
+    employeeId: p.employeeId,
+    employeeName: p.employeeName || p.employeeNameSnapshot || (p.employee ? `${p.employee.firstName || ''} ${p.employee.lastName || ''}`.trim() : 'Employee'),
+    department: p.department || p.departmentNameSnapshot || (p.department?.name || 'Operations'),
+    jobPosition: p.jobPosition || p.jobPositionNameSnapshot || (p.jobPosition?.title || 'Staff Member'),
+    contractReference: p.contractReference || p.contractNumberSnapshot || p.contract?.contractNumber || 'CNT',
+    periodStart: p.periodStart ? String(p.periodStart).split('T')[0] : (p.periodStartDate ? String(p.periodStartDate).split('T')[0] : ''),
+    periodEnd: p.periodEnd ? String(p.periodEnd).split('T')[0] : (p.periodEndDate ? String(p.periodEndDate).split('T')[0] : ''),
+    status: (p.status || 'PAID').toLowerCase() as PayslipStatus,
+    workedDays: Number(p.actualWorkedDays ?? p.workedDays ?? 0),
+    workedHours: Number(p.workedHours ?? 0),
+    basicSalary: Number(p.basicSalary ?? 0),
+    grossSalary: Number(p.grossSalary ?? 0),
+    totalDeductions: Number(p.totalDeductions ?? 0),
+    netSalary: Number(p.netSalary ?? 0),
+    ruleLines: (p.lines || p.ruleLines || []).map((l: any) => ({
+      ruleCode: l.ruleCode,
+      ruleName: l.ruleName,
+      category: (l.category || 'ALLOWANCE').toLowerCase(),
+      amount: Number(l.amount || 0),
+      sequence: Number(l.sequence || 0),
+    })),
+    warnings: p.warnings || (p.hasWarnings && p.warningsJson ? JSON.parse(p.warningsJson) : []),
+  };
+}
 
 export const payrollService = {
   async getDashboardMetrics(): Promise<ApiResponse<PayrollDashboardMetrics>> {
-    // Corrected: Backend uses /api/dashboard, not /api/payroll/metrics
-    return apiClient.get<PayrollDashboardMetrics>('/api/dashboard');
+    const res = await apiClient.get<any>('/api/dashboard');
+    return {
+      ...res,
+      data: res.data?.metrics || res.data,
+    };
   },
 
   async getSalaryRules(): Promise<ApiResponse<SalaryRule[]>> {
-    // Corrected: Backend uses /api/payroll/salary-rules
-    return apiClient.get<SalaryRule[]>('/api/payroll/salary-rules');
+    const res = await apiClient.get<any>('/api/payroll/salary-rules');
+    return {
+      ...res,
+      data: res.data?.rules || (Array.isArray(res.data) ? res.data : []),
+    };
   },
 
   async createSalaryRule(data: Partial<SalaryRule>): Promise<ApiResponse<SalaryRule>> {
@@ -22,8 +60,11 @@ export const payrollService = {
   },
 
   async getSalaryStructures(): Promise<ApiResponse<SalaryStructure[]>> {
-    // Corrected: Backend uses /api/payroll/salary-structures
-    return apiClient.get<SalaryStructure[]>('/api/payroll/salary-structures');
+    const res = await apiClient.get<any>('/api/payroll/salary-structures');
+    return {
+      ...res,
+      data: res.data?.structures || (Array.isArray(res.data) ? res.data : []),
+    };
   },
 
   async createSalaryStructure(data: Partial<SalaryStructure>): Promise<ApiResponse<SalaryStructure>> {
@@ -35,7 +76,11 @@ export const payrollService = {
   },
 
   async getPayruns(): Promise<ApiResponse<Payrun[]>> {
-    return apiClient.get<Payrun[]>('/api/payroll/payruns');
+    const res = await apiClient.get<any>('/api/payroll/payruns');
+    return {
+      ...res,
+      data: res.data?.payruns || (Array.isArray(res.data) ? res.data : []),
+    };
   },
 
   async createPayrun(data: Partial<Payrun>): Promise<ApiResponse<Payrun>> {
@@ -43,7 +88,11 @@ export const payrollService = {
   },
 
   async getPayrunById(id: string): Promise<ApiResponse<Payrun | undefined>> {
-    return apiClient.get<Payrun | undefined>(`/api/payroll/payruns/${id}`);
+    const res = await apiClient.get<any>(`/api/payroll/payruns/${id}`);
+    return {
+      ...res,
+      data: res.data?.payrun || res.data,
+    };
   },
 
   async computePayrun(id: string): Promise<ApiResponse<Payrun>> {
@@ -64,11 +113,21 @@ export const payrollService = {
 
   async getPayslips(payrunId?: string): Promise<ApiResponse<Payslip[]>> {
     const url = payrunId ? `/api/payroll/payslips?payrunId=${payrunId}` : '/api/payroll/payslips';
-    return apiClient.get<Payslip[]>(url);
+    const res = await apiClient.get<any>(url);
+    const rawList = res.data?.payslips || (Array.isArray(res.data) ? res.data : []);
+    return {
+      ...res,
+      data: rawList.map(normalizePayslip),
+    };
   },
 
   async getPayslipById(id: string): Promise<ApiResponse<Payslip | undefined>> {
-    return apiClient.get<Payslip | undefined>(`/api/payroll/payslips/${id}`);
+    const res = await apiClient.get<any>(`/api/payroll/payslips/${id}`);
+    const raw = res.data?.payslip || res.data;
+    return {
+      ...res,
+      data: raw ? normalizePayslip(raw) : undefined,
+    };
   },
 
   getPayslipPdfUrl(id: string): string {
@@ -79,4 +138,3 @@ export const payrollService = {
     return apiClient.post<void>(`/api/payroll/payslips/${id}/email`);
   },
 };
-
