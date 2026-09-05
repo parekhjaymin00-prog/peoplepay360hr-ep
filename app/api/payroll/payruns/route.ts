@@ -20,10 +20,11 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
 
     const status = (searchParams.get('status') as PayrunStatus) ?? undefined;
-    const startDate = searchParams.get('startDate') ?? undefined;
-    const endDate = searchParams.get('endDate') ?? undefined;
+    const salaryStructureId = searchParams.get('salaryStructureId') ?? undefined;
+    const startDate = searchParams.get('startDate') || searchParams.get('periodStart') || undefined;
+    const endDate = searchParams.get('endDate') || searchParams.get('periodEnd') || undefined;
 
-    const payruns = await PayrunService.listPayruns({ status, startDate, endDate });
+    const payruns = await PayrunService.listPayruns({ status, salaryStructureId, startDate, endDate });
     return jsonSuccess({ payruns });
   } catch (error) {
     return jsonError(error);

@@ -22,6 +22,7 @@ export interface ListPayrunsFilter {
   status?: PayrunStatus;
   startDate?: string;
   endDate?: string;
+  salaryStructureId?: string;
 }
 
 export class PayrunService {
@@ -31,6 +32,7 @@ export class PayrunService {
   static async listPayruns(filter?: ListPayrunsFilter) {
     const where: any = {};
     if (filter?.status) where.status = filter.status;
+    if (filter?.salaryStructureId) where.salaryStructureId = filter.salaryStructureId;
     if (filter?.startDate || filter?.endDate) {
       if (filter.startDate) where.periodStartDate = { gte: new Date(filter.startDate) };
       if (filter.endDate) where.periodEndDate = { lte: new Date(filter.endDate) };
@@ -489,5 +491,53 @@ export class PayrunService {
     }
 
     return payslip;
+  }
+
+  /**
+   * Lists payslips with self-service employee restrictions and history filtering.
+   */
+  static async listPayslips(filter: {
+    employeeId?: string;
+    payrunId?: string;
+    status?: PayslipStatus;
+    startDate?: string;
+    endDate?: string;
+  } | undefined, user: SafeUser) {
+    const where: any = {};
+
+    const isHrOrAdmin =
+      user.role.code === 'ADMIN' ||
+      user.permissions.includes('payroll.payrun.read');
+
+    if (!isHrOrAdmin) {
+      if (!user.employee) {
+        throw new AuthorizationError('You do not have access to payslip records');
+      }
+      // If employee specifies another employee's ID, reject with AuthorizationError
+      if (filter?.employeeId && filter.employeeId !== user.employee.id) {
+        throw new AuthorizationError('Employees can only access their own payslip history');
+      }
+      where.employeeId = user.employee.id;
+    } else {
+      if (filter?.employeeId) {
+        where.employeeId = filter.employeeId;
+      }
+    }
+
+    if (filter?.payrunId) where.payrunId = filter.payrunId;
+    if (filter?.status) where.status = filter.status;
+    if (filter?.startDate || filter?.endDate) {
+      if (filter.startDate) where.periodStartDate = { gte: new Date(filter.startDate) };
+      if (filter.endDate) where.periodEndDate = { lte: new Date(filter.endDate) };
+    }
+
+    return prisma.payslip.findMany({
+      where,
+      orderBy: { periodStartDate: 'desc' },
+      include: {
+        lines: { orderBy: { sequence: 'asc' } },
+        payrun: { select: { id: true, name: true, reference: true, status: true } },
+      },
+    });
   }
 }

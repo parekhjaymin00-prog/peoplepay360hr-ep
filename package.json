@@ -18,7 +18,8 @@
     "test:timeoff": "tsx tests/time-off.test.ts",
     "test:salary": "tsx tests/salary-structure-rule.test.ts",
     "test:payroll": "tsx tests/payroll-engine.test.ts",
-    "test": "tsx tests/db-integrity.test.ts && tsx tests/auth.test.ts && tsx tests/hr-core.test.ts && tsx tests/attendance.test.ts && tsx tests/time-off.test.ts && tsx tests/salary-structure-rule.test.ts && tsx tests/payroll-engine.test.ts"
+    "test:payslip": "tsx tests/payslip-pdf-email-history.test.ts",
+    "test": "tsx tests/db-integrity.test.ts && tsx tests/auth.test.ts && tsx tests/hr-core.test.ts && tsx tests/attendance.test.ts && tsx tests/time-off.test.ts && tsx tests/salary-structure-rule.test.ts && tsx tests/payroll-engine.test.ts && tsx tests/payslip-pdf-email-history.test.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -28,6 +29,8 @@
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.3",
     "next": "^15.2.0",
+    "nodemailer": "^10.0.0",
+    "pdfkit": "^0.20.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "uuid": "^11.1.0",
@@ -37,6 +40,8 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.13.5",
+    "@types/nodemailer": "^8.0.1",
+    "@types/pdfkit": "^0.17.6",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/uuid": "^10.0.0",
