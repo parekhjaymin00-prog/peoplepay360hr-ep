@@ -26,8 +26,8 @@ export default function PayslipsListPage() {
     try {
       const res = await payrollService.getPayslips();
       if (res.success && res.data) {
-        if (role === 'employee') {
-          const myId = user?.employeeId || user?.id;
+        if (role === 'EMPLOYEE') {
+          const myId = user?.employee?.id;
           setPayslips(myId ? res.data.filter((s) => s.employeeId === myId) : res.data);
         } else {
           setPayslips(res.data);
@@ -49,8 +49,8 @@ export default function PayslipsListPage() {
       .then((res) => {
         if (!isMounted) return;
         if (res.success && res.data) {
-          if (role === 'employee') {
-            const myId = user?.employeeId || user?.id;
+          if (role === 'EMPLOYEE') {
+            const myId = user?.employee?.id;
             setPayslips(myId ? res.data.filter((s) => s.employeeId === myId) : res.data);
           } else {
             setPayslips(res.data);
@@ -84,9 +84,9 @@ export default function PayslipsListPage() {
   return (
     <div>
       <ActionRibbon
-        title={role === 'employee' ? 'My Payslips' : 'Employee Payslips Directory'}
+        title={role === 'EMPLOYEE' ? 'My Payslips' : 'Employee Payslips Directory'}
         subtitle={
-          role === 'employee'
+          role === 'EMPLOYEE'
             ? 'Your personal salary computation sheets and historical payslip records'
             : 'Individual salary computation sheets and historical payslips archive'
         }

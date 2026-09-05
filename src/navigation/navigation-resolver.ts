@@ -15,7 +15,7 @@ export interface ResolvedNavigationGroup {
  */
 export function resolveNavigation(role: UserRole): ResolvedNavigationGroup[] {
   // Safe fallback if role is undefined
-  const effectiveRole: UserRole = role || 'employee';
+  const effectiveRole: UserRole = role || 'EMPLOYEE';
 
   const visibleCategories = NAVIGATION_CATEGORIES.filter((cat) =>
     cat.allowedRoles.includes(effectiveRole)
@@ -46,7 +46,7 @@ export function resolveNavigation(role: UserRole): ResolvedNavigationGroup[] {
  * Checks if a given route is accessible for the specified role in the frontend UI.
  */
 export function isRouteVisibleForRole(pathname: string, role: UserRole): boolean {
-  if (role === 'admin') return true;
+  if (role === 'ADMIN') return true;
 
   // Find matching navigation item by prefix
   const matchingItem = NAVIGATION_ITEMS.find((item) => {

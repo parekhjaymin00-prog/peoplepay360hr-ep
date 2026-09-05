@@ -70,7 +70,7 @@ export default function EmployeesPage() {
   }, []);
 
   // Employee role does not have access to manage organization directory
-  if (role === 'employee') {
+  if (role === 'EMPLOYEE') {
     return (
       <div>
         <ActionRibbon title="Employees Directory" subtitle="Administrative employee master records" />

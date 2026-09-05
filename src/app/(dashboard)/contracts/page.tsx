@@ -17,7 +17,7 @@ import { getRoleCapabilities } from '@/lib/permissions';
 export default function ContractsPage() {
   const router = useRouter();
   const { role } = useAuth();
-  const caps = getRoleCapabilities(role);
+  const caps = role ? getRoleCapabilities(role) : null;
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +67,7 @@ export default function ContractsPage() {
     };
   }, []);
 
-  if (!caps.canManageContracts) {
+  if (!caps || !caps.canManageContracts) {
     return (
       <div>
         <ActionRibbon title="Employee Contracts" subtitle="Employment terms & wage agreements" />

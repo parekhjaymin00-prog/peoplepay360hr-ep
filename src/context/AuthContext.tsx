@@ -5,10 +5,12 @@ import { AuthState, User, UserRole } from '@/types/auth.types';
 import { authService, LoginCredentials } from '@/services/auth.service';
 
 interface AuthContextType extends AuthState {
-  role: UserRole;
+  role: UserRole | null;
+  permissions: string[];
   login: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  hasPermission: (permission: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,7 +18,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 /**
  * Real Backend Authentication Provider.
  * Session state is established authoritatively by the backend API via GET /api/auth/me.
- * No localStorage role simulation, no hardcoded default user.
+ * Uses JWT tokens in HTTP-only 'token' cookie.
+ * No localStorage role simulation, no hardcoded default user, no DEMO_ACCOUNTS.
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -98,17 +101,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const role: UserRole = user?.role || 'employee';
+  const hasPermission = useCallback(
+    (permission: string): boolean => {
+      if (!user) return false;
+      // ADMIN role has all permissions
+      if (user.role.code === 'ADMIN') return true;
+      return user.permissions.includes(permission);
+    },
+    [user]
+  );
+
+  const role: UserRole | null = user?.role.code || null;
+  const permissions: string[] = user?.permissions || [];
 
   return (
     <AuthContext.Provider
       value={{
         user,
         role,
+        permissions,
         status,
         login,
         logout,
         refreshUser: checkSession,
+        hasPermission,
       }}
     >
       {children}
@@ -123,3 +139,4 @@ export function useAuth() {
   }
   return context;
 }
+

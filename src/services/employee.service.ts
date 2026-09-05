@@ -12,11 +12,14 @@ export const employeeService = {
   },
 
   async getContracts(): Promise<ApiResponse<Contract[]>> {
-    return apiClient.get<Contract[]>('/api/contracts');
+    // NOTE: Backend contracts are accessed via employee endpoint
+    // This method may not work without an employeeId
+    return apiClient.get<Contract[]>('/api/payroll/contracts');
   },
 
   async getContractsByEmployeeId(employeeId: string): Promise<ApiResponse<Contract[]>> {
-    return apiClient.get<Contract[]>(`/api/contracts?employeeId=${employeeId}`);
+    // Correct backend endpoint: /api/employees/[id]/contracts
+    return apiClient.get<Contract[]>(`/api/employees/${employeeId}/contracts`);
   },
 };
 

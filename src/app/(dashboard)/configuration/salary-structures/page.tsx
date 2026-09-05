@@ -17,7 +17,7 @@ import { getRoleCapabilities } from '@/lib/permissions';
 export default function SalaryStructuresPage() {
   const router = useRouter();
   const { role } = useAuth();
-  const caps = getRoleCapabilities(role);
+  const caps = role ? getRoleCapabilities(role) : null;
   const [structures, setStructures] = useState<SalaryStructure[]>([]);
   const [rules, setRules] = useState<SalaryRule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,7 +86,7 @@ export default function SalaryStructuresPage() {
   }, []);
 
   // Employees and HR Managers cannot access salary structures
-  if (!caps.canAccessPayroll) {
+  if (!caps || !caps.canAccessPayroll) {
     return (
       <div>
         <ActionRibbon title="Salary Structures Setup" subtitle="Salary calculation rule collections" />

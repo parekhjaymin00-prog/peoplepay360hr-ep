@@ -21,7 +21,7 @@ export interface RoleCapabilities {
 }
 
 export const ROLE_DEFINITIONS: Record<UserRole, RoleCapabilities> = {
-  employee: {
+  EMPLOYEE: {
     canManageEmployees: false,
     canManageContracts: false,
     canManageSchedules: false,
@@ -33,7 +33,7 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleCapabilities> = {
     roleLabel: 'Employee',
     description: 'Own info, own attendance, own time off requests. No HR or payroll administration.',
   },
-  hr_manager: {
+  HR_MANAGER: {
     canManageEmployees: true,
     canManageContracts: true,
     canManageSchedules: true,
@@ -45,7 +45,7 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleCapabilities> = {
     roleLabel: 'HR Manager',
     description: 'Full CRUD on Employees, Attendance, Contracts, Working Schedules, and Time Off. No payroll access.',
   },
-  hr_payroll_user: {
+  HR_PAYROLL_USER: {
     canManageEmployees: true,
     canManageContracts: true,
     canManageSchedules: true,
@@ -57,7 +57,7 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleCapabilities> = {
     roleLabel: 'HR Payroll User',
     description: 'All HR Manager capabilities + create/read/update Payruns and Payslips. Read-only salary configuration.',
   },
-  hr_payroll_manager: {
+  HR_PAYROLL_MANAGER: {
     canManageEmployees: true,
     canManageContracts: true,
     canManageSchedules: true,
@@ -69,7 +69,7 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleCapabilities> = {
     roleLabel: 'HR Payroll Manager',
     description: 'Full control over HR operations, Payruns, Payslips, and Salary Structures & Rules.',
   },
-  admin: {
+  ADMIN: {
     canManageEmployees: true,
     canManageContracts: true,
     canManageSchedules: true,
@@ -84,5 +84,5 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleCapabilities> = {
 };
 
 export function getRoleCapabilities(role: UserRole): RoleCapabilities {
-  return ROLE_DEFINITIONS[role] || ROLE_DEFINITIONS.employee;
+  return ROLE_DEFINITIONS[role] || ROLE_DEFINITIONS.EMPLOYEE;
 }

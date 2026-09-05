@@ -33,7 +33,7 @@ export const EmployeeDashboard: React.FC = () => {
 
   useEffect(() => {
     let isMounted = true;
-    const empId = user?.employeeId || user?.id;
+    const empId = user?.employee?.id;
 
     Promise.all([
       empId ? employeeService.getEmployeeById(empId) : employeeService.getEmployees(),
@@ -87,10 +87,10 @@ export const EmployeeDashboard: React.FC = () => {
     return <StateContainer type="loading" description="Loading employee workspace..." />;
   }
 
-  const empName = employee?.name || user?.name || 'Employee';
-  const empCode = employee?.employeeCode || user?.id || 'EMP';
-  const empJob = employee?.jobPosition || 'Staff Member';
-  const empDept = employee?.department || 'Operations';
+  const empName = employee?.name || user?.employee?.firstName || 'Employee';
+  const empCode = employee?.employeeCode || user?.employee?.employeeNumber || 'EMP';
+  const empJob = employee?.jobPosition || user?.employee?.jobPosition?.title || 'Staff Member';
+  const empDept = employee?.department || user?.employee?.department?.name || 'Operations';
 
 
   return (

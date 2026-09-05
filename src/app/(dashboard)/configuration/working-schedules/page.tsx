@@ -18,7 +18,7 @@ import { getRoleCapabilities } from '@/lib/permissions';
 export default function WorkingSchedulesPage() {
   const router = useRouter();
   const { role } = useAuth();
-  const caps = getRoleCapabilities(role);
+  const caps = role ? getRoleCapabilities(role) : null;
   const [schedules, setSchedules] = useState<WorkingSchedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,7 +73,7 @@ export default function WorkingSchedulesPage() {
     };
   }, []);
 
-  if (!caps.canManageSchedules) {
+  if (!caps || !caps.canManageSchedules) {
     return (
       <div>
         <ActionRibbon title="Working Schedules Setup" subtitle="Weekly shift patterns & hours" />

@@ -32,11 +32,13 @@ export const timeoffService = {
   },
 
   async approveRequest(id: string): Promise<ApiResponse<TimeOffRequest>> {
-    return apiClient.post<TimeOffRequest>(`/api/time-off/requests/${id}/approve`);
+    // Corrected: Using PATCH instead of POST for approve action
+    return apiClient.patch<TimeOffRequest>(`/api/time-off/requests/${id}/approve`, {});
   },
 
   async refuseRequest(id: string, reason?: string): Promise<ApiResponse<TimeOffRequest>> {
-    return apiClient.post<TimeOffRequest>(`/api/time-off/requests/${id}/refuse`, { reason });
+    // Backend uses 'reject', but service uses 'refuse' - check API route
+    return apiClient.patch<TimeOffRequest>(`/api/time-off/requests/${id}/reject`, { reason });
   },
 
   async cancelRequest(id: string): Promise<ApiResponse<TimeOffRequest>> {

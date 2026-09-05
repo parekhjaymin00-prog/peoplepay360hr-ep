@@ -157,9 +157,9 @@ export default function EmployeeHubPage() {
         subtitle={`${employee.employeeCode} • ${employee.jobPosition}`}
         statusBadge={<Badge status={employee.status} />}
         leftActions={
-          <Link href={role === 'employee' ? '/dashboard' : '/employees'} style={{ textDecoration: 'none' }}>
+          <Link href={role === 'EMPLOYEE' ? '/dashboard' : '/employees'} style={{ textDecoration: 'none' }}>
             <Button variant="outline" size="sm" leftIcon={<ArrowLeft size={15} />}>
-              {role === 'employee' ? 'My Workspace' : 'Employees Directory'}
+              {role === 'EMPLOYEE' ? 'My Workspace' : 'Employees Directory'}
             </Button>
           </Link>
         }

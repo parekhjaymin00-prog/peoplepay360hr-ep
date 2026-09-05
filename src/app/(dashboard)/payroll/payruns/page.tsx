@@ -19,7 +19,7 @@ import { getRoleCapabilities } from '@/lib/permissions';
 export default function PayrunsPage() {
   const router = useRouter();
   const { role } = useAuth();
-  const caps = getRoleCapabilities(role);
+  const caps = role ? getRoleCapabilities(role) : null;
   const [payruns, setPayruns] = useState<Payrun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +69,7 @@ export default function PayrunsPage() {
   }, []);
 
   // Check if role has payroll access
-  if (!caps.canAccessPayroll) {
+  if (!caps || !caps.canAccessPayroll) {
     return (
       <div>
         <ActionRibbon title="Payroll Batches (Payruns)" subtitle="Batch payroll execution & processing" />

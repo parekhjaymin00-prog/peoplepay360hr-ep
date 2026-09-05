@@ -18,7 +18,7 @@ import { AdministrativeDashboard } from './AdministrativeDashboard';
 export const DashboardShell: React.FC = () => {
   const { role } = useAuth();
 
-  if (role === 'employee') {
+  if (role === 'EMPLOYEE') {
     return <EmployeeDashboard />;
   }
 

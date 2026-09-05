@@ -12,11 +12,12 @@ export const attendanceService = {
   },
 
   async getWorkingSchedules(): Promise<ApiResponse<WorkingSchedule[]>> {
-    return apiClient.get<WorkingSchedule[]>('/api/working-schedules');
+    // Corrected: Backend uses /api/payroll/working-schedules
+    return apiClient.get<WorkingSchedule[]>('/api/payroll/working-schedules');
   },
 
   async getWorkingScheduleById(id: string): Promise<ApiResponse<WorkingSchedule | undefined>> {
-    return apiClient.get<WorkingSchedule | undefined>(`/api/working-schedules/${id}`);
+    return apiClient.get<WorkingSchedule | undefined>(`/api/payroll/working-schedules/${id}`);
   },
 
   async checkIn(): Promise<ApiResponse<AttendanceRecord>> {

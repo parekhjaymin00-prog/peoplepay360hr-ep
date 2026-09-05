@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { payrollService } from '@/services/payroll.service';
@@ -22,13 +22,11 @@ import {
 } from 'lucide-react';
 
 import { useAuth } from '@/context/AuthContext';
-import { getRoleCapabilities } from '@/lib/permissions';
 
 export default function PayrunProcessingPage() {
   const params = useParams();
   const router = useRouter();
-  const { role } = useAuth();
-  const caps = getRoleCapabilities(role);
+  const { hasPermission } = useAuth();
   const payrunId = params?.id as string;
 
   const [payrun, setPayrun] = useState<Payrun | null>(null);
@@ -37,6 +35,12 @@ export default function PayrunProcessingPage() {
   const [error, setError] = useState<string | null>(null);
   const [actionNotice, setActionNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+
+  // Permission checks
+  const canReadPayroll = hasPermission('payroll.payrun.read');
+  const canComputePayroll = hasPermission('payroll.payrun.compute');
+  const canValidatePayroll = hasPermission('payroll.payrun.validate');
+  const canPayPayroll = hasPermission('payroll.payrun.pay');
 
   const loadPayrun = async () => {
     setLoading(true);
@@ -97,7 +101,7 @@ export default function PayrunProcessingPage() {
     };
   }, [payrunId]);
 
-  if (!caps.canAccessPayroll) {
+  if (!canReadPayroll) {
     return (
       <div>
         <ActionRibbon title="Payrun Processing" subtitle="Payroll calculation & validation" />
@@ -105,7 +109,7 @@ export default function PayrunProcessingPage() {
           <StateContainer
             type="unauthorized"
             title="Payroll Processing Restricted"
-            description="Your current role does not have authorization to view or execute Payrun batches. HR Managers and Employees are restricted from payroll processing."
+            description="Your current role does not have authorization to view or execute Payrun batches. Contact your administrator for access."
             actionText="Return to Dashboard"
             onAction={() => router.push('/dashboard')}
           />
@@ -234,7 +238,7 @@ export default function PayrunProcessingPage() {
         }
         rightActions={
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {payrun.status === 'draft' && (
+            {payrun.status === 'draft' && canComputePayroll && (
               <Button
                 variant="primary"
                 size="sm"
@@ -248,28 +252,32 @@ export default function PayrunProcessingPage() {
 
             {payrun.status === 'computed' && (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  leftIcon={<Calculator size={15} />}
-                  onClick={handleCompute}
-                  disabled={Boolean(actionInProgress)}
-                >
-                  {actionInProgress === 'compute' ? 'Computing...' : 'Recompute'}
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  leftIcon={<CheckCircle size={15} />}
-                  onClick={handleValidate}
-                  disabled={Boolean(actionInProgress)}
-                >
-                  {actionInProgress === 'validate' ? 'Validating...' : 'Validate Batch'}
-                </Button>
+                {canComputePayroll && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    leftIcon={<Calculator size={15} />}
+                    onClick={handleCompute}
+                    disabled={Boolean(actionInProgress)}
+                  >
+                    {actionInProgress === 'compute' ? 'Computing...' : 'Recompute'}
+                  </Button>
+                )}
+                {canValidatePayroll && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    leftIcon={<CheckCircle size={15} />}
+                    onClick={handleValidate}
+                    disabled={Boolean(actionInProgress)}
+                  >
+                    {actionInProgress === 'validate' ? 'Validating...' : 'Validate Batch'}
+                  </Button>
+                )}
               </>
             )}
 
-            {payrun.status === 'validated' && (
+            {payrun.status === 'validated' && canPayPayroll && (
               <Button
                 variant="success"
                 size="sm"
@@ -281,7 +289,7 @@ export default function PayrunProcessingPage() {
               </Button>
             )}
 
-            {(payrun.status === 'validated' || payrun.status === 'paid') && (
+            {(payrun.status === 'validated' || payrun.status === 'paid') && canPayPayroll && (
               <Button
                 variant="outline"
                 size="sm"

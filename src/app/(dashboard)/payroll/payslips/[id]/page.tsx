@@ -161,7 +161,7 @@ export default function PayslipDetailPage() {
             >
               Download Payslip PDF
             </Button>
-            {role !== 'employee' && (
+            {role !== 'EMPLOYEE' && (
               <Button
                 variant="primary"
                 size="sm"

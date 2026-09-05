@@ -4,31 +4,34 @@ import { Payrun, Payslip, PayrollDashboardMetrics, SalaryRule, SalaryStructure }
 
 export const payrollService = {
   async getDashboardMetrics(): Promise<ApiResponse<PayrollDashboardMetrics>> {
-    return apiClient.get<PayrollDashboardMetrics>('/api/payroll/metrics');
+    // Corrected: Backend uses /api/dashboard, not /api/payroll/metrics
+    return apiClient.get<PayrollDashboardMetrics>('/api/dashboard');
   },
 
   async getSalaryRules(): Promise<ApiResponse<SalaryRule[]>> {
-    return apiClient.get<SalaryRule[]>('/api/salary-rules');
+    // Corrected: Backend uses /api/payroll/salary-rules
+    return apiClient.get<SalaryRule[]>('/api/payroll/salary-rules');
   },
 
   async createSalaryRule(data: Partial<SalaryRule>): Promise<ApiResponse<SalaryRule>> {
-    return apiClient.post<SalaryRule>('/api/salary-rules', data);
+    return apiClient.post<SalaryRule>('/api/payroll/salary-rules', data);
   },
 
   async updateSalaryRule(id: string, data: Partial<SalaryRule>): Promise<ApiResponse<SalaryRule>> {
-    return apiClient.patch<SalaryRule>(`/api/salary-rules/${id}`, data);
+    return apiClient.patch<SalaryRule>(`/api/payroll/salary-rules/${id}`, data);
   },
 
   async getSalaryStructures(): Promise<ApiResponse<SalaryStructure[]>> {
-    return apiClient.get<SalaryStructure[]>('/api/salary-structures');
+    // Corrected: Backend uses /api/payroll/salary-structures
+    return apiClient.get<SalaryStructure[]>('/api/payroll/salary-structures');
   },
 
   async createSalaryStructure(data: Partial<SalaryStructure>): Promise<ApiResponse<SalaryStructure>> {
-    return apiClient.post<SalaryStructure>('/api/salary-structures', data);
+    return apiClient.post<SalaryStructure>('/api/payroll/salary-structures', data);
   },
 
   async updateSalaryStructure(id: string, data: Partial<SalaryStructure>): Promise<ApiResponse<SalaryStructure>> {
-    return apiClient.patch<SalaryStructure>(`/api/salary-structures/${id}`, data);
+    return apiClient.patch<SalaryStructure>(`/api/payroll/salary-structures/${id}`, data);
   },
 
   async getPayruns(): Promise<ApiResponse<Payrun[]>> {

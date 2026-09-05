@@ -4,27 +4,27 @@ export const NAVIGATION_CATEGORIES: NavigationCategoryConfig[] = [
   {
     category: 'workspace',
     label: 'My Workspace',
-    allowedRoles: ['employee'],
+    allowedRoles: ['EMPLOYEE'],
   },
   {
     category: 'operations',
     label: 'HR Operations',
-    allowedRoles: ['hr_manager', 'hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_MANAGER', 'HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     category: 'payroll',
     label: 'Payroll Operations',
-    allowedRoles: ['hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     category: 'config',
     label: 'Master Configuration',
-    allowedRoles: ['hr_manager', 'hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_MANAGER', 'HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     category: 'admin',
     label: 'Administration',
-    allowedRoles: ['admin'],
+    allowedRoles: ['ADMIN'],
   },
 ];
 
@@ -38,7 +38,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/dashboard',
     iconName: 'LayoutDashboard',
     category: 'workspace',
-    allowedRoles: ['employee'],
+    allowedRoles: ['EMPLOYEE'],
   },
   {
     id: 'emp-profile',
@@ -46,7 +46,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/employees/emp-1',
     iconName: 'User',
     category: 'workspace',
-    allowedRoles: ['employee'],
+    allowedRoles: ['EMPLOYEE'],
   },
   {
     id: 'emp-attendance',
@@ -54,7 +54,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/attendance',
     iconName: 'Clock',
     category: 'workspace',
-    allowedRoles: ['employee'],
+    allowedRoles: ['EMPLOYEE'],
   },
   {
     id: 'emp-timeoff-requests',
@@ -62,7 +62,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/time-off/requests',
     iconName: 'CalendarCheck',
     category: 'workspace',
-    allowedRoles: ['employee'],
+    allowedRoles: ['EMPLOYEE'],
   },
   {
     id: 'emp-timeoff-allocations',
@@ -70,7 +70,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/time-off/allocations',
     iconName: 'CalendarClock',
     category: 'workspace',
-    allowedRoles: ['employee'],
+    allowedRoles: ['EMPLOYEE'],
   },
   {
     id: 'emp-payslips',
@@ -78,7 +78,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/payroll/payslips',
     iconName: 'FileSpreadsheet',
     category: 'workspace',
-    allowedRoles: ['employee'],
+    allowedRoles: ['EMPLOYEE'],
   },
 
   // -------------------------------------------------------------
@@ -90,7 +90,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/dashboard',
     iconName: 'LayoutDashboard',
     category: 'operations',
-    allowedRoles: ['hr_manager', 'hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_MANAGER', 'HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     id: 'hr-employees',
@@ -98,7 +98,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/employees',
     iconName: 'Users',
     category: 'operations',
-    allowedRoles: ['hr_manager', 'hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_MANAGER', 'HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     id: 'hr-attendance',
@@ -106,7 +106,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/attendance',
     iconName: 'Clock',
     category: 'operations',
-    allowedRoles: ['hr_manager', 'hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_MANAGER', 'HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     id: 'hr-timeoff-requests',
@@ -114,7 +114,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/time-off/requests',
     iconName: 'CalendarCheck',
     category: 'operations',
-    allowedRoles: ['hr_manager', 'hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_MANAGER', 'HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     id: 'hr-timeoff-allocations',
@@ -122,7 +122,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/time-off/allocations',
     iconName: 'CalendarClock',
     category: 'operations',
-    allowedRoles: ['hr_manager', 'hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_MANAGER', 'HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
 
   // -------------------------------------------------------------
@@ -134,7 +134,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/payroll/payruns',
     iconName: 'CreditCard',
     category: 'payroll',
-    allowedRoles: ['hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     id: 'payroll-payslips',
@@ -142,7 +142,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/payroll/payslips',
     iconName: 'FileSpreadsheet',
     category: 'payroll',
-    allowedRoles: ['hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
 
   // -------------------------------------------------------------
@@ -154,7 +154,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/contracts',
     iconName: 'FileText',
     category: 'config',
-    allowedRoles: ['hr_manager', 'hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_MANAGER', 'HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     id: 'config-schedules',
@@ -162,7 +162,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/configuration/working-schedules',
     iconName: 'CalendarClock',
     category: 'config',
-    allowedRoles: ['hr_manager', 'hr_payroll_user', 'hr_payroll_manager', 'admin'],
+    allowedRoles: ['HR_MANAGER', 'HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
   },
   {
     id: 'config-structures',
@@ -170,8 +170,8 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/configuration/salary-structures',
     iconName: 'Layers',
     category: 'config',
-    allowedRoles: ['hr_payroll_user', 'hr_payroll_manager', 'admin'],
-    isReadOnlyForRoles: ['hr_payroll_user'], // Read-only for HR Payroll User
+    allowedRoles: ['HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
+    isReadOnlyForRoles: ['HR_PAYROLL_USER'], // Read-only for HR Payroll User
   },
   {
     id: 'config-rules',
@@ -179,8 +179,8 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/configuration/salary-rules',
     iconName: 'Sliders',
     category: 'config',
-    allowedRoles: ['hr_payroll_user', 'hr_payroll_manager', 'admin'],
-    isReadOnlyForRoles: ['hr_payroll_user'], // Read-only for HR Payroll User
+    allowedRoles: ['HR_PAYROLL_USER', 'HR_PAYROLL_MANAGER', 'ADMIN'],
+    isReadOnlyForRoles: ['HR_PAYROLL_USER'], // Read-only for HR Payroll User
   },
 
   // -------------------------------------------------------------
@@ -192,7 +192,7 @@ export const NAVIGATION_ITEMS: NavigationItemConfig[] = [
     href: '/admin/users',
     iconName: 'Shield',
     category: 'admin',
-    allowedRoles: ['admin'],
+    allowedRoles: ['ADMIN'],
     badge: 'TBD Backend',
   },
 ];

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { attendanceService } from '@/services/attendance.service';
 import { AttendanceRecord } from '@/types/attendance.types';
 import { ActionRibbon } from '@/components/layout/ActionRibbon';
@@ -13,11 +13,9 @@ import { formatDate, formatHours } from '@/lib/formatters';
 import { Plus, Edit3, CheckCircle } from 'lucide-react';
 
 import { useAuth } from '@/context/AuthContext';
-import { getRoleCapabilities } from '@/lib/permissions';
 
 export default function AttendancePage() {
-  const { user, role } = useAuth();
-  const caps = getRoleCapabilities(role);
+  const { user, hasPermission } = useAuth();
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,15 +23,20 @@ export default function AttendancePage() {
   const [correctionReason, setCorrectionReason] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Permission checks
+  const canCorrectAttendance = hasPermission('attendance.correct');
+  const canViewAllAttendance = hasPermission('attendance.read');
+  const isEmployee = user?.role?.code === 'EMPLOYEE';
+
   const loadData = async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await attendanceService.getAttendanceRecords();
       if (res.success && res.data) {
-        if (role === 'employee') {
-          const myId = user?.employeeId || user?.id;
-          setRecords(myId ? res.data.filter((r) => r.employeeId === myId) : res.data);
+        // Employees see only their own data
+        if (isEmployee && user?.employee) {
+          setRecords(res.data.filter((r) => r.employeeId === user.employee!.id));
         } else {
           setRecords(res.data);
         }
@@ -54,9 +57,9 @@ export default function AttendancePage() {
       .then((res) => {
         if (!isMounted) return;
         if (res.success && res.data) {
-          if (role === 'employee') {
-            const myId = user?.employeeId || user?.id;
-            setRecords(myId ? res.data.filter((r) => r.employeeId === myId) : res.data);
+          // Employees see only their own data
+          if (isEmployee && user?.employee) {
+            setRecords(res.data.filter((r) => r.employeeId === user.employee!.id));
           } else {
             setRecords(res.data);
           }
@@ -76,7 +79,7 @@ export default function AttendancePage() {
     return () => {
       isMounted = false;
     };
-  }, [role, user]);
+  }, [isEmployee, user]);
 
   const openCorrection = (rec: AttendanceRecord) => {
     setSelectedRecord(rec);
@@ -100,14 +103,14 @@ export default function AttendancePage() {
   return (
     <div>
       <ActionRibbon
-        title={role === 'employee' ? 'My Attendance Register' : 'Daily Attendance Register'}
+        title={isEmployee ? 'My Attendance Register' : 'Daily Attendance Register'}
         subtitle={
-          role === 'employee'
+          isEmployee
             ? 'Review your daily clock-ins, worked hours, and verified attendance records'
             : 'Review clock-ins, worked hours, missing checkouts, and overtime exceptions'
         }
         leftActions={
-          caps.canManageAttendance ? (
+          canCorrectAttendance ? (
             <Button variant="primary" size="sm" leftIcon={<Plus size={16} />}>
               Manual Attendance Entry
             </Button>
@@ -129,7 +132,7 @@ export default function AttendancePage() {
           <StateContainer
             type="empty"
             title="No Attendance Records"
-            description={role === 'employee' ? 'You have no attendance check-ins logged yet.' : 'No employee attendance logs recorded for this period.'}
+            description={isEmployee ? 'You have no attendance check-ins logged yet.' : 'No employee attendance logs recorded for this period.'}
           />
         ) : (
           <div className="erp-table-wrapper">
@@ -173,7 +176,7 @@ export default function AttendancePage() {
                       </Badge>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      {caps.canManageAttendance ? (
+                      {canCorrectAttendance ? (
                         <Button
                           variant="ghost"
                           size="sm"

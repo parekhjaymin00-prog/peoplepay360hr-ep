@@ -94,14 +94,14 @@ export const AppHeader: React.FC = () => {
               fontSize: '0.8125rem',
             }}
           >
-            {user?.name ? user.name.charAt(0) : <UserIcon size={16} />}
+            {user?.employee ? user.employee.firstName.charAt(0) : (user?.email ? user.email.charAt(0).toUpperCase() : <UserIcon size={16} />)}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
             <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              {user?.name || 'User'}
+              {user?.employee ? `${user.employee.firstName} ${user.employee.lastName}` : user?.email || 'User'}
             </span>
             <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
-              {ROLE_DEFINITIONS[role]?.roleLabel || role}
+              {role ? ROLE_DEFINITIONS[role]?.roleLabel : 'User'}
             </span>
           </div>
           <button

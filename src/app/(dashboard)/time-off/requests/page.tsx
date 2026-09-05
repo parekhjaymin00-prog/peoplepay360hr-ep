@@ -26,8 +26,8 @@ export default function TimeOffRequestsPage() {
     try {
       const res = await timeoffService.getTimeOffRequests();
       if (res.success && res.data) {
-        if (role === 'employee') {
-          const myId = user?.employeeId || user?.id;
+        if (role === 'EMPLOYEE') {
+          const myId = user?.employee?.id;
           setRequests(myId ? res.data.filter((r) => r.employeeId === myId) : res.data);
         } else {
           setRequests(res.data);
@@ -49,8 +49,8 @@ export default function TimeOffRequestsPage() {
       .then((res) => {
         if (!isMounted) return;
         if (res.success && res.data) {
-          if (role === 'employee') {
-            const myId = user?.employeeId || user?.id;
+          if (role === 'EMPLOYEE') {
+            const myId = user?.employee?.id;
             setRequests(myId ? res.data.filter((r) => r.employeeId === myId) : res.data);
           } else {
             setRequests(res.data);
@@ -125,7 +125,7 @@ export default function TimeOffRequestsPage() {
           <StateContainer
             type="empty"
             title="No Time Off Requests Found"
-            description={role === 'employee' ? 'You have not submitted any time off requests.' : 'No employee leave requests are currently registered in the system.'}
+            description={role === 'EMPLOYEE' ? 'You have not submitted any time off requests.' : 'No employee leave requests are currently registered in the system.'}
           />
         ) : (
           <div className="erp-table-wrapper">

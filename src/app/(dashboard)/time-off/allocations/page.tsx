@@ -24,8 +24,8 @@ export default function TimeOffAllocationsPage() {
     try {
       const res = await timeoffService.getTimeOffAllocations();
       if (res.success && res.data) {
-        if (role === 'employee') {
-          const myId = user?.employeeId || user?.id;
+        if (role === 'EMPLOYEE') {
+          const myId = user?.employee?.id;
           setAllocations(myId ? res.data.filter((alc) => alc.employeeId === myId) : res.data);
         } else {
           setAllocations(res.data);
@@ -47,8 +47,8 @@ export default function TimeOffAllocationsPage() {
       .then((res) => {
         if (!isMounted) return;
         if (res.success && res.data) {
-          if (role === 'employee') {
-            const myId = user?.employeeId || user?.id;
+          if (role === 'EMPLOYEE') {
+            const myId = user?.employee?.id;
             setAllocations(myId ? res.data.filter((alc) => alc.employeeId === myId) : res.data);
           } else {
             setAllocations(res.data);
@@ -74,14 +74,14 @@ export default function TimeOffAllocationsPage() {
   return (
     <div>
       <ActionRibbon
-        title={role === 'employee' ? 'My Leave Allocations' : 'Time Off Allocations'}
+        title={role === 'EMPLOYEE' ? 'My Leave Allocations' : 'Time Off Allocations'}
         subtitle={
-          role === 'employee'
+          role === 'EMPLOYEE'
             ? 'Your active leave quotas, days taken, and remaining balance availability'
             : 'Manage employee leave quotas, valid availability periods, and remaining balances'
         }
         leftActions={
-          role !== 'employee' ? (
+          role !== 'EMPLOYEE' ? (
             <Button variant="primary" size="sm" leftIcon={<Plus size={16} />}>
               New Allocation Request
             </Button>
@@ -103,7 +103,7 @@ export default function TimeOffAllocationsPage() {
           <StateContainer
             type="empty"
             title="No Allocations Available"
-            description={role === 'employee' ? 'You have no leave quota allocations assigned.' : 'No employee leave quotas are configured in the system.'}
+            description={role === 'EMPLOYEE' ? 'You have no leave quota allocations assigned.' : 'No employee leave quotas are configured in the system.'}
           />
         ) : (
           <div className="erp-table-wrapper">
